@@ -1,57 +1,33 @@
 import React from 'react'
-import { TokenContext } from '../../contexts/TokenProvider'
-import { toast } from 'react-toastify'
+import UnCoInput from '../AAA/UnCoInput'
+import Heading from '../AAA/Heading'
+import Button from '../AAA/Button'
+import Form from '../AAA/Form'
 
-const AuthURL = 'http://170.64.192.236:80/token'
+const LOGIN_LIST = [
+  { label: 'Email: ', type: 'email', name: 'username' },
+  { label: 'Password: ', type: 'password', name: 'password', minLength: '6' },
+]
 
-function LoginForm() {
-  const [username, setUsername] = React.useState('')
-  const [password, setPassword] = React.useState('')
-
-  const { setJWT } = React.useContext(TokenContext)
-
-  async function handleSubmit(e) {
+function LoginForm({ logIn }) {
+  function handleSubmit(e) {
     e.preventDefault()
-    // make fetch call
-    const response = await fetch(AuthURL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({ username, password }),
-    })
-    if (!response.ok) {
-      toast.error(`Error logging in...(${response.statusText})`)
-      return
-    }
-    const json = await response.json()
-    // access_token, refresh_token, role, token_type: "bearer"
-    toast.success('Logged in!')
-
-    // if successful, set JWT
-    setJWT(json.access_token)
+    const formData = new FormData(e.target)
+    const data = Object.fromEntries(formData)
+    logIn(data)
   }
 
   return (
     <section style={{ marginTop: '1rem' }}>
-      <h4>Log In Form</h4>
-      <form style={{ marginTop: '0.5rem' }} onSubmit={handleSubmit}>
-        <label htmlFor="username">Username</label>
-        <input
-          type="email"
-          name="username"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        <label htmlFor="password">password</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button>Submit</button>
-      </form>
+      {/* <Heading level={4}>Log In Form</Heading> */}
+      <Form onSubmit={handleSubmit}>
+        {LOGIN_LIST.map(({ label, type, name, minLength }) => {
+          return (
+            <UnCoInput key={name} label={label} type={type} name={name} minLength={minLength} />
+          )
+        })}
+        <Button>Submit</Button>
+      </Form>
     </section>
   )
 }

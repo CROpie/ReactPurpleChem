@@ -1,0 +1,54 @@
+.wrapper {
+  position: relative;
+  /* width: max-content; */
+  width: 100%;
+  margin-top: var(--input-marginY);
+  margin-bottom: var(--input-marginY);
+}
+
+.label {
+  display: block;
+  margin-left: var(--input-labelMarginLeft);
+  color: var(--text-color);
+}
+
+.nativeSelect {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+}
+
+.iconWrapper {
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  top: 0;
+  bottom: 0;
+  right: 10px;
+  margin: auto;
+  pointer-events: none;
+}
+
+.presentationBit {
+  width: 100%;
+  color: var(--input-color);
+  background: var(--input-background);
+  padding: var(--input-padding);
+  font-size: var(--input-fontSize);
+  border-radius: var(--input-borderRadius);
+  border: var(--input-border);
+  outline: var(--input-outline);
+}
+
+.nativeSelect:focus + .presentationBit {
+  border: var(--input-borderColorFocus);
+}
+
+.nativeSelect:hover + .presentationBit {
+  color: var(--input-colorHover);
+  background: var(--input-backgroundHover);
+  border: var(--input-borderColorFocus);
+}

@@ -1,37 +1,19 @@
 import React from 'react'
+import NewLocation from './NewLocation'
+import LocationsList from './LocationsList'
+import Button from '../AAA/Button'
 
-export default function LocationSidebar({ locations, addNewLocation, setSelectedLocation }) {
-  const [newLocation, setNewLocation] = React.useState('')
-
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (!newLocation) return
-    addNewLocation(newLocation)
-    setNewLocation('')
-  }
+export default function LocationSidebar({ locations, setSelectedLocation, setRefreshKey }) {
+  const [showNewLocation, setShowNewLocation] = React.useState(false)
   return (
     <section style={{ marginTop: '0.5rem' }}>
-      <ul>
-        <li key={'all'}>
-          <button onClick={() => setSelectedLocation('all')}>All</button>
-        </li>
-        {locations.map(({ id, locationName }) => (
-          <li key={id}>
-            <button onClick={() => setSelectedLocation(id)}>{locationName}</button>
-          </li>
-        ))}
-      </ul>
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="newLocation">
-          New Location
-          <input
-            id="newLocation"
-            value={newLocation}
-            onChange={(e) => setNewLocation(e.target.value)}
-          />
-        </label>
-        <button>Submit</button>
-      </form>
+      <LocationsList locations={locations} setSelectedLocation={setSelectedLocation} />
+      {showNewLocation && (
+        <NewLocation setRefreshKey={setRefreshKey} setShowNewLocation={setShowNewLocation} />
+      )}
+      <Button type="button" onClick={() => setShowNewLocation(!showNewLocation)}>
+        {showNewLocation ? 'Hide' : 'Add New Location'}
+      </Button>
     </section>
   )
 }

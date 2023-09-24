@@ -1,0 +1,8 @@
+.wrapper {
+  /* border: 2px solid black; */
+  box-shadow: var(--shadow-2);
+  border-radius: var(--borderRadius);
+  padding: 2rem 2.5rem;
+  margin: 1rem auto 1rem auto;
+  background: var(--backgroundWhite);
+}

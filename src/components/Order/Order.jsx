@@ -1,103 +1,83 @@
 import React from 'react'
 
+import Heading from '../AAA/Heading'
 import OrderCAS from './OrderCAS'
 import OrderForm from './OrderForm'
+
 import { toast } from 'react-toastify'
 import { TokenContext } from '../../contexts/TokenProvider'
 
-const CASURL = `https://commonchemistry.cas.org/api/detail`
-const DataURL = 'http://170.64.192.236:85'
+import { DataURL } from '../constants'
 
 function Order() {
   const [newChemical, setNewChemical] = React.useState({})
-  const [newOrder, setNewOrder] = React.useState({})
-  const [suppliers, setSuppliers] = React.useState([])
   const [status, setStatus] = React.useState('idle')
+  const [extendedForm, setExtendedForm] = React.useState(false)
+
   const { JWT } = React.useContext(TokenContext)
 
-  console.log(newChemical, newOrder)
+  const casRef = React.useRef()
 
-  async function loadSuppliers() {
-    console.log('Fetching Data...')
-    setStatus('loading')
-    const response = await fetch(`${DataURL}/supplierslist`, {
-      headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
-    })
-    if (!response.ok) {
-      toast.error(`Error (${response.statusText})`)
-      setStatus('error')
-      return
-    }
-    const json = await response.json()
-    setStatus('success')
-    setSuppliers(json)
-  }
-
-  React.useEffect(() => {
-    loadSuppliers()
-  }, [])
-
-  async function searchCas(cas) {
-    const response = await fetch(`${CASURL}?cas_rn=${cas}`)
-    if (!response.ok) {
-      toast.error(`Error (${response.statusText}`)
-    }
-    const json = await response.json()
-    console.log(json)
-
-    const phys = json.experimentalProperties.reduce((acc, item) => {
-      const propName = item.name.replace(/ /g, '')
-      const propValue = item.property
-      acc[propName] = propValue
-
-      return acc
-    }, {})
-    console.log(phys)
-
-    const newChemicalCopy = {
-      ...newChemical,
-      CAS: json.rn,
-      chemicalName: json.name,
-      MW: json.molecularMass,
-      inchi: json.inchi,
-      smile: json.smile,
-      MP: phys.MeltingPoint !== undefined ? phys.MeltingPoint : null,
-      BP: phys.BoilingPoint !== undefined ? phys.BoilingPoint : null,
-      density: phys.Density !== undefined ? phys.Density : null,
+  // gets called from OrderForm
+  // data contains ordering info, and if inputted manually, chemical info
+  async function placeOrder(data) {
+    //
+    const orderData = {
+      amount: data.amount,
+      amountUnit: data.amountUnit,
+      supplier_id: data.supplier,
     }
 
-    setNewChemical(newChemicalCopy)
-  }
+    let chemicalData = {}
+    // if chemical data wasn't found by cas or database, get data via the from in ExtendedOrderForm
+    if (extendedForm) {
+      // determine CAS number via casRef
+      const casNumberData = new FormData(casRef.current)
+      const casNumber = casNumberData.get('cas')
 
-  async function placeOrder(amount, amountUnit, supplier_id) {
-    console.log(amount, amountUnit, supplier_id)
-    const newOrderCopy = { ...newOrder, amount, amountUnit, supplier_id }
-    setNewOrder(newOrderCopy)
+      chemicalData = {
+        CAS: String(casNumber),
+        chemicalName: String(data.chemicalName),
+        MW: String(data.MW),
+        MP: String(data.MP),
+        BP: String(data.BP),
+        density: String(data.density),
+        smile: String(data.smile),
+        inchi: String(data.inchi),
+      }
+    } else {
+      // otherwise, it will be stored in newChemical already
+      chemicalData = newChemical
+    }
 
     const response = await fetch(`${DataURL}/order`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
-      body: JSON.stringify({ chemicalData: newChemical, orderData: newOrderCopy }),
+      body: JSON.stringify({ chemicalData, orderData }),
     })
     if (!response.ok) {
       toast.error(`Error (${response.statusText}`)
+      setStatus('idle')
+      return
     }
     const json = await response.json()
     toast.success('Order Placed.')
+    setStatus('idle')
   }
 
   return (
-    <section style={{ marginTop: '2rem' }}>
-      <h4>Order</h4>
-      <OrderCAS searchCas={searchCas} />
-      <OrderForm placeOrder={placeOrder} suppliers={suppliers} />
-    </section>
+    <main style={{ marginTop: '2rem' }}>
+      <Heading level={3}>Order</Heading>
+      <OrderCAS
+        setNewChemical={setNewChemical}
+        setExtendedForm={setExtendedForm}
+        setStatus={setStatus}
+        casRef={casRef}
+      />
+      {status === 'loading' && <p style={{ color: 'var(--text-color)' }}>Searching...</p>}
+      {status === 'searched' && <OrderForm placeOrder={placeOrder} extendedForm={extendedForm} />}
+    </main>
   )
 }
 
 export default Order
-
-/*
-
-
-  */

@@ -1,0 +1,65 @@
+.table {
+  color: var(--text-color);
+  padding: 0 0.5rem;
+  box-shadow: var(--shadow-2);
+  border-collapse: collapse;
+  border-radius: var(--borderRadius);
+  width: 100%;
+  margin-top: 2rem;
+  table-layout: fixed;
+  word-break: break-all;
+}
+
+.head {
+  color: var(--primary);
+  font-size: 1.5rem;
+  text-transform: uppercase;
+}
+
+.headrowleft {
+  padding: 0.5rem;
+  padding-left: 1.5rem;
+  text-align: left;
+}
+
+.headrowcenter {
+  padding: 0.5rem;
+  text-align: center;
+}
+
+.headrowright {
+  padding: 0.5rem;
+  padding-right: 1.5rem;
+  text-align: right;
+}
+
+.bodyrow {
+  cursor: pointer;
+}
+
+.bodyrow:nth-child(odd) {
+  border-top: 2px solid var(--grey-900);
+}
+
+.bodyrow:nth-child(even) {
+  border-top: 2px solid var(--grey-800);
+}
+
+.bodyrow:hover {
+  color: var(--primaryLight);
+}
+
+.bodyrowitemleft {
+  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+  text-align: start;
+}
+
+.bodyrowitemcenter {
+  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+  text-align: center;
+}
+
+.bodyrowitemright {
+  padding: 0.5rem 1.5rem 0.5rem 1.5rem;
+  text-align: end;
+}

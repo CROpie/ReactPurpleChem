@@ -1,43 +1,42 @@
 import React from 'react'
 
+import styles from './Inventory.module.css'
+
 import * as Accordion from '@radix-ui/react-accordion'
 import OrderProperties from './OrderProperties'
 import OrderAdjust from './OrderAdjust'
+import { RDKitContext } from '../../contexts/RDKitProvider'
+import Heading from '../AAA/Heading'
 
-export default function OrdersAccordion({ orders, selectedLocation, patchInventory, locations }) {
-  const [RDKitMod, setRDKit] = React.useState(null)
+export default function OrdersAccordion({ orders, selectedLocation, setRefreshKey, locations }) {
   const [structure, setStructure] = React.useState('')
 
-  if (selectedLocation !== 'all') {
-    orders = orders.filter((order) => order.location_id === selectedLocation)
+  const { RDKit } = React.useContext(RDKitContext)
+
+  if (selectedLocation.value !== 'all') {
+    orders = orders.filter((order) => order.location_id === selectedLocation.value)
   }
 
   function handleClick(order) {
-    const currentStructure = RDKitMod.get_mol(order.chemical.smile).get_svg()
+    const currentStructure = RDKit.get_mol(order.chemical.smile).get_svg()
     setStructure(currentStructure)
   }
 
-  React.useEffect(() => {
-    // async is necessary.
-    async function initRDKit() {
-      const initRDKitMod = await initRDKitModule()
-      setRDKit(initRDKitMod)
-    }
-    initRDKit()
-  }, [])
-
   return (
-    <Accordion.Root type="single" collapsible style={{ marginTop: '3rem' }}>
+    <Accordion.Root type="single" collapsible style={{ marginTop: '0.5rem' }}>
+      {/* <Heading level={3}>{selectedLocation.label}</Heading> */}
       {orders.map((order) => (
-        <Accordion.Item key={order.id} value={order.id} onClick={() => handleClick(order)}>
+        <Accordion.Item key={order.id} value={order.id}>
           <Accordion.Header>
-            <Accordion.Trigger>
+            <Accordion.Trigger className={styles.accordionItem} onClick={() => handleClick(order)}>
               {order.id}-{order.chemical.chemicalName}
             </Accordion.Trigger>
           </Accordion.Header>
-          <Accordion.Content>
-            <OrderAdjust order={order} patchInventory={patchInventory} locations={locations} />
-            <OrderProperties order={order} structure={structure} />
+          <Accordion.Content className={styles.accordionContentWrapper}>
+            <div className={styles.accordionContent}>
+              <OrderAdjust order={order} setRefreshKey={setRefreshKey} locations={locations} />
+              <OrderProperties order={order} structure={structure} />
+            </div>
           </Accordion.Content>
         </Accordion.Item>
       ))}

@@ -1,0 +1,33 @@
+.wrapper {
+  margin-top: var(--input-marginY);
+  margin-bottom: var(--input-marginY);
+}
+
+.label {
+  display: block;
+  margin-left: var(--input-labelMarginLeft);
+  color: var(--text-color);
+}
+
+.input {
+  display: block;
+  width: 100%;
+  color: var(--input-color);
+  background: var(--input-backGround);
+  border: var(--input-border);
+  border-radius: var(--input-borderRadius);
+  padding: var(--input-padding);
+  font-size: var(--input-fontSize);
+  outline: var(--input-outline);
+}
+
+.input:hover {
+  color: var(--input-colorHover);
+  background: var(--input-backgroundHover);
+  border: var(--input-borderColorFocus);
+}
+
+.input:focus {
+  border: var(--input-borderColorFocus);
+  /* outline: 2px solid purple; */
+}

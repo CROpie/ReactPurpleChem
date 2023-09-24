@@ -8,7 +8,9 @@ import QueryStructure from './QueryStructure'
 
 // ?queryType=structure | string
 // ?queryString=<inchi> | string
-const DataURL = 'http://170.64.192.236:85'
+import { DataURL } from '../constants'
+import Heading from '../AAA/Heading'
+import Button from '../AAA/Button'
 
 function Query() {
   const [orders, setOrders] = React.useState([])
@@ -39,10 +41,10 @@ function Query() {
 
   return (
     <section style={{ marginTop: '2rem' }}>
-      <h4>Query</h4>
-      <button onClick={() => (toggle === 'string' ? setToggle('structure') : setToggle('string'))}>
+      <Heading level={3}>Query</Heading>
+      <Button onClick={() => (toggle === 'string' ? setToggle('structure') : setToggle('string'))}>
         {toggle === 'string' ? 'Show structure search' : 'Show string search'}
-      </button>
+      </Button>
       {toggle === 'string' && <QueryString queryDatabase={queryDatabase} status={status} />}
       {toggle === 'structure' && <QueryStructure queryDatabase={queryDatabase} status={status} />}
       {status === 'loading' && <p>Loading...</p>}

@@ -1,0 +1,11 @@
+.link {
+  border: none;
+  font-size: 1.25rem;
+  background: transparent;
+  color: var(--text-color);
+  font-family: var(--font);
+}
+
+.logout:hover {
+  color: red;
+}

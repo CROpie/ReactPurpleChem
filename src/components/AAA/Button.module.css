@@ -1,0 +1,23 @@
+.button {
+  font-family: var(--font);
+  width: 100%;
+  color: var(--input-color);
+  background: var(--input-backGround);
+  border: var(--input-border);
+  border-radius: var(--input-borderRadius);
+  padding: var(--input-padding);
+  font-size: var(--input-fontSize);
+  outline: var(--input-outline);
+  margin-top: var(--input-marginY);
+  margin-bottom: var(--input-marginY);
+}
+
+.button:hover {
+  color: var(--input-colorHover);
+  background: var(--input-backgroundHover);
+  border: var(--input-borderColorFocus);
+}
+
+.button:focus {
+  border: var(--input-borderColorFocus);
+}

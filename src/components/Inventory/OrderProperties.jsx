@@ -1,15 +1,15 @@
+import styles from './Inventory.module.css'
+
 export default function OrderProperties({ order, structure }) {
   return (
-    <article style={{ marginTop: '2rem' }}>
-      <ul>
-        <li dangerouslySetInnerHTML={{ __html: structure }} />
-        <li>CAS: {order.chemical.CAS}</li>
-        <li>MW: {order.chemical.MW}</li>
-        <li>MP: {order.chemical.MP}</li>
-        <li>BP: {order.chemical.BP}</li>
-        <li>Density: {order.chemical.density}</li>
-      </ul>
-    </article>
+    <ul className={styles.accordionDetails}>
+      <li dangerouslySetInnerHTML={{ __html: structure }} />
+      <li>CAS: {order.chemical.CAS}</li>
+      <li>MW: {order.chemical.MW}</li>
+      <li>MP: {order.chemical.MP}</li>
+      <li>BP: {order.chemical.BP}</li>
+      <li>Density: {order.chemical.density}</li>
+    </ul>
   )
 }
 

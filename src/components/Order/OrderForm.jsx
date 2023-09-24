@@ -1,58 +1,77 @@
 import React from 'react'
+import UnCoInput from '../AAA/UnCoInput'
+import UnCoSelect from '../AAA/UnCoSelect'
+import ExtendedOrderForm from './ExtendedOrderForm'
 
-const amountUnitList = ['mg', 'g', 'mL', 'L']
+import { toast } from 'react-toastify'
 
-export default function OrderForm({ placeOrder, suppliers }) {
-  const [amount, setAmount] = React.useState('')
-  const [amountUnit, setAmountUnit] = React.useState(amountUnitList[1])
-  const [supplier_id, setSupplier] = React.useState('')
-  console.log(supplier_id)
+import { TokenContext } from '../../contexts/TokenProvider'
+
+import { DataURL } from '../constants'
+import Form from '../AAA/Form'
+import Button from '../AAA/Button'
+
+const amountUnitList = [
+  { label: 'mg', value: 'mg' },
+  { label: 'g', value: 'g' },
+  { label: 'mL', value: 'mL' },
+  { label: 'L', value: 'L' },
+]
+
+export default function OrderForm({ placeOrder, extendedForm }) {
+  const [suppliers, setSuppliers] = React.useState([])
+
+  const { JWT } = React.useContext(TokenContext)
+
+  async function loadSuppliers() {
+    const response = await fetch(`${DataURL}/supplierslist`, {
+      headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
+    })
+    if (!response.ok) {
+      toast.error(`Error (${response.statusText})`)
+
+      return
+    }
+    const json = await response.json()
+    const mapSuppliers = json.map((supplier) => {
+      const obj = { value: supplier.id, label: supplier.supplierName }
+      return obj
+    })
+
+    setSuppliers(mapSuppliers)
+  }
+
+  React.useEffect(() => {
+    loadSuppliers()
+  }, [])
 
   function handleSubmit(e) {
     e.preventDefault()
-    placeOrder(parseInt(amount), amountUnit, parseInt(supplier_id))
+    const formData = new FormData(e.target)
+    const data = Object.fromEntries(formData)
+
+    if (!data.amount || !data.amountUnit || !data.supplier) {
+      toast.error('Please fill out the necessary fields..')
+    }
+
+    if (extendedForm && !data.chemicalName) {
+      toast.error('Please enter name for the chemical.')
+      return
+    }
+    if (extendedForm && !data.smile) {
+      toast.error('Please draw and save the chemical in the field provided.')
+      return
+    }
+
+    placeOrder(data)
   }
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="amount">
-        Amount:
-        <input
-          type="number"
-          id="amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          min="0"
-        />
-        <select value={amountUnit} onChange={(e) => setAmountUnit(e.target.value)}>
-          {amountUnitList.map((unit) => (
-            <option value={unit} key={unit}>
-              {unit}
-            </option>
-          ))}
-        </select>
-        <select value={supplier_id} onChange={(e) => setSupplier(e.target.value)}>
-          <option>Select Supplier:</option>
-          {suppliers.map((supplier) => (
-            <option value={supplier.id} key={supplier.id}>
-              {supplier.supplierName}
-            </option>
-          ))}
-        </select>
-      </label>
-      <button>Submit</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <UnCoInput label="Amount:" type="number" name="amount" min="0" />
+      <UnCoSelect list={amountUnitList} name="amountUnit" label="Unit:" />
+      <UnCoSelect list={suppliers} name="supplier" label="Supplier:" />
+      {extendedForm && <ExtendedOrderForm />}
+      <Button>Submit</Button>
+    </Form>
   )
 }
-/*
-      <select
-        value={newLocation ? newLocation : ''}
-        onChange={(e) => setNewLocation(e.target.value)}
-      >
-        <option>Select Location:</option>
-        {locations.map((location) => (
-          <option value={location.id} key={location.id}>
-            {location.locationName}
-          </option>
-        ))}
-      </select>
-      */

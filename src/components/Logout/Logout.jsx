@@ -2,19 +2,19 @@ import React from 'react'
 import { TokenContext } from '../../contexts/TokenProvider'
 import { toast } from 'react-toastify'
 
-function Logout() {
+function Logout({ children, ...delegated }) {
   const { JWT, setJWT } = React.useContext(TokenContext)
 
   function handleLogOut() {
-    setJWT(null)
+    setJWT()
     window.localStorage.removeItem('access-token')
     toast.success('Logged out.')
   }
 
   return (
-    <>
-      <button onClick={handleLogOut}>LogOut</button>
-    </>
+    <button {...delegated} onClick={handleLogOut}>
+      {children}
+    </button>
   )
 }
 

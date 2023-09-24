@@ -1,23 +1,21 @@
 import React from 'react'
+import UnCoInput from '../AAA/UnCoInput'
+import Button from '../AAA/Button'
+import Form from '../AAA/Form'
 
 export default function QueryString({ queryDatabase, status }) {
-  const [querystring, setQuerystring] = React.useState('')
   const isLoading = status === 'loading'
 
   async function handleSubmit(e) {
     e.preventDefault()
+    const formData = new FormData(e.target)
+    const querystring = String(formData.get('querystring'))
     queryDatabase('string', querystring)
   }
   return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="querystring">
-        <input
-          id="querystring"
-          value={querystring}
-          onChange={(e) => setQuerystring(e.target.value)}
-        />
-      </label>
-      <button disabled={isLoading}>{isLoading ? 'Searching...' : 'Search'}</button>
-    </form>
+    <Form onSubmit={handleSubmit}>
+      <UnCoInput name={'querystring'} label={'Chemical name, CAS or user'} />
+      <Button disabled={isLoading}>{isLoading ? 'Searching...' : 'Search'}</Button>
+    </Form>
   )
 }
