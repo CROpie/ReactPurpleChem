@@ -8,6 +8,7 @@ export default function LocationSidebar({ locations, setSelectedLocation, setRef
   return (
     <section style={{ marginTop: '0.5rem' }}>
       <LocationsList locations={locations} setSelectedLocation={setSelectedLocation} />
+
       {showNewLocation && (
         <NewLocation setRefreshKey={setRefreshKey} setShowNewLocation={setShowNewLocation} />
       )}

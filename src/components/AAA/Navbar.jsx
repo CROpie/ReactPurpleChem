@@ -3,6 +3,8 @@ import React from 'react'
 import styles from './Navbar.module.css'
 import Logout from '../Logout/Logout'
 
+import { Link } from 'react-router-dom'
+
 export default function Navbar({ selectedPage, setSelectedPage, pages, logoslot, logoutslot }) {
   return (
     <>
@@ -14,9 +16,9 @@ export default function Navbar({ selectedPage, setSelectedPage, pages, logoslot,
             const style =
               page === selectedPage ? `${styles.link} ${styles.selectedPage}` : styles.link
             return (
-              <button className={style} key={page} onClick={() => setSelectedPage(page)}>
+              <Link to={page} className={style} key={page} onClick={() => setSelectedPage(page)}>
                 {page}
-              </button>
+              </Link>
             )
           })}
         </div>

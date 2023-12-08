@@ -4,11 +4,11 @@ export default function LocationsList({ locations, setSelectedLocation }) {
   return (
     <ul>
       <li key={'all'}>
-        <Button onClick={() => setSelectedLocation({ value: 'all', label: 'all' })}>All</Button>
+        <Button onClick={() => setSelectedLocation({ id: 'all', locationName: 'all' })}>All</Button>
       </li>
-      {locations.map(({ value, label }) => (
-        <li key={value}>
-          <Button onClick={() => setSelectedLocation({ value, label })}>{label}</Button>
+      {locations.map(({ id, locationName }) => (
+        <li key={id}>
+          <Button onClick={() => setSelectedLocation({ id, locationName })}>{locationName}</Button>
         </li>
       ))}
     </ul>

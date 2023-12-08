@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 import { TokenContext } from '../../contexts/TokenProvider'
 
 import { DataURL } from '../constants'
+import { usePostOrder } from '../../mutations/usePostOrder'
 
 function Order() {
   const [newChemical, setNewChemical] = React.useState({})
@@ -17,6 +18,8 @@ function Order() {
   const { JWT } = React.useContext(TokenContext)
 
   const casRef = React.useRef()
+
+  const { mutate } = usePostOrder(JWT)
 
   // gets called from OrderForm
   // data contains ordering info, and if inputted manually, chemical info
@@ -50,19 +53,7 @@ function Order() {
       chemicalData = newChemical
     }
 
-    const response = await fetch(`${DataURL}/order`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
-      body: JSON.stringify({ chemicalData, orderData }),
-    })
-    if (!response.ok) {
-      toast.error(`Error (${response.statusText}`)
-      setStatus('idle')
-      return
-    }
-    const json = await response.json()
-    toast.success('Order Placed.')
-    setStatus('idle')
+    mutate({ chemicalData, orderData })
   }
 
   return (

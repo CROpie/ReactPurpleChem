@@ -8,13 +8,15 @@ import OrderAdjust from './OrderAdjust'
 import { RDKitContext } from '../../contexts/RDKitProvider'
 import Heading from '../AAA/Heading'
 
-export default function OrdersAccordion({ orders, selectedLocation, setRefreshKey, locations }) {
+export default function OrdersAccordion({ orders, selectedLocation, locations }) {
+  console.log(orders, selectedLocation, locations)
+
   const [structure, setStructure] = React.useState('')
 
   const { RDKit } = React.useContext(RDKitContext)
 
-  if (selectedLocation.value !== 'all') {
-    orders = orders.filter((order) => order.location_id === selectedLocation.value)
+  if (selectedLocation.id !== 'all') {
+    orders = orders.filter((order) => order.location_id === selectedLocation.id)
   }
 
   function handleClick(order) {
@@ -34,7 +36,7 @@ export default function OrdersAccordion({ orders, selectedLocation, setRefreshKe
           </Accordion.Header>
           <Accordion.Content className={styles.accordionContentWrapper}>
             <div className={styles.accordionContent}>
-              <OrderAdjust order={order} setRefreshKey={setRefreshKey} locations={locations} />
+              <OrderAdjust order={order} locations={locations} />
               <OrderProperties order={order} structure={structure} />
             </div>
           </Accordion.Content>

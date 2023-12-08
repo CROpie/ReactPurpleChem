@@ -2,15 +2,21 @@ import React from 'react'
 import UnCoInput from '../AAA/UnCoInput'
 import Button from '../AAA/Button'
 import Form from '../AAA/Form'
+import { TokenContext } from '../../contexts/TokenProvider'
 
-export default function QueryString({ queryDatabase, status }) {
+import { useQuery } from '@tanstack/react-query'
+
+import { DataURL } from '../constants'
+
+export default function QueryString({ setInputQuery, status }) {
   const isLoading = status === 'loading'
 
   async function handleSubmit(e) {
     e.preventDefault()
     const formData = new FormData(e.target)
     const querystring = String(formData.get('querystring'))
-    queryDatabase('string', querystring)
+    if (!querystring) return
+    setInputQuery({ type: 'string', string: querystring })
   }
   return (
     <Form onSubmit={handleSubmit}>

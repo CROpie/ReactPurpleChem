@@ -1,10 +1,11 @@
 import React from 'react'
 import QueryString from './QueryString'
 import QueryTable from './QueryTable'
+import QueryStructure from './QueryStructure'
+import { useQuery } from '@tanstack/react-query'
 
 import { TokenContext } from '../../contexts/TokenProvider'
 import { toast } from 'react-toastify'
-import QueryStructure from './QueryStructure'
 
 // ?queryType=structure | string
 // ?queryString=<inchi> | string
@@ -12,46 +13,49 @@ import { DataURL } from '../constants'
 import Heading from '../AAA/Heading'
 import Button from '../AAA/Button'
 
-function Query() {
-  const [orders, setOrders] = React.useState([])
-  // string | structure
-  const [toggle, setToggle] = React.useState('string')
-  // idle, loading, success, error
-  const [status, setStatus] = React.useState('idle')
-  const { JWT } = React.useContext(TokenContext)
-
-  async function queryDatabase(type, querystring) {
-    setStatus('loading')
-    const response = await fetch(
-      `${DataURL}/ordersquery?queryType=${type}&queryString=${querystring}`,
-      {
-        headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
-      }
-    )
-    if (!response.ok) {
-      toast.error(`Error (${response.statusText})`)
-      setStatus('error')
-      return
-    }
-    const json = await response.json()
-    console.log(json)
-    setStatus('success')
-    setOrders(json)
+async function getQueryData(inputQuery, JWT) {
+  const { type, string } = inputQuery
+  if (!inputQuery.string) {
+    return null
+  }
+  const response = await fetch(`${DataURL}/ordersquery?queryType=${type}&queryString=${string}`, {
+    headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
+  })
+  if (!response.ok) {
+    toast.error(`Error (${response.statusText})`)
+    return
   }
 
+  const json = await response.json()
+  return json
+}
+
+export default function Query() {
+  // string | structure
+  const [toggle, setToggle] = React.useState('string')
+
+  const { JWT } = React.useContext(TokenContext)
+
+  // { type: "string"/"structure, string: <input value> }
+  const [inputQuery, setInputQuery] = React.useState({})
+  console.log('input: ', inputQuery)
+
+  // return value from queryFn stored in data object
+  const { data } = useQuery({
+    queryKey: ['query', inputQuery.string],
+    queryFn: () => getQueryData(inputQuery, JWT),
+  })
+
+  const orders = data
   return (
     <section style={{ marginTop: '2rem' }}>
       <Heading level={3}>Query</Heading>
       <Button onClick={() => (toggle === 'string' ? setToggle('structure') : setToggle('string'))}>
         {toggle === 'string' ? 'Show structure search' : 'Show string search'}
       </Button>
-      {toggle === 'string' && <QueryString queryDatabase={queryDatabase} status={status} />}
-      {toggle === 'structure' && <QueryStructure queryDatabase={queryDatabase} status={status} />}
-      {status === 'loading' && <p>Loading...</p>}
-      {status === 'error' && <p>There was a problem searching the database...</p>}
-      <QueryTable orders={orders} />
+      {toggle === 'string' && <QueryString setInputQuery={setInputQuery} />}
+      {toggle === 'structure' && <QueryStructure setInputQuery={setInputQuery} />}
+      {orders && orders.length > 0 && <QueryTable orders={orders} />}
     </section>
   )
 }
-
-export default Query

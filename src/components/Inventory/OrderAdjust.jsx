@@ -9,10 +9,14 @@ import UnCoSelect from '../AAA/UnCoSelect'
 import Button from '../AAA/Button'
 import Form from '../AAA/Form'
 
-export default function OrderAdjust({ order, setRefreshKey, locations }) {
+import { usePatchOrder } from '../../mutations/usePatchOrder'
+
+export default function OrderAdjust({ order, locations }) {
   const { amountUnit } = order
 
   const { JWT } = React.useContext(TokenContext)
+
+  const { mutate } = usePatchOrder(JWT)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -31,28 +35,15 @@ export default function OrderAdjust({ order, setRefreshKey, locations }) {
       isConsumed,
       location_id,
     }
-    console.log(patchInventoryItem)
-    patchInventory(patchInventoryItem)
+
+    mutate({ patchInventoryItem })
   }
 
-  async function patchInventory(patchInventoryItem) {
-    // setStatus('loading')
-
-    const response = await fetch(`${DataURL}/inventory`, {
-      method: 'PATCH',
-      headers: { 'content-type': 'application/json', Authorization: `Bearer ${JWT}` },
-      body: JSON.stringify(patchInventoryItem),
-    })
-    if (!response.ok) {
-      toast.error(`Failed to make changes: (${response.statusText})`)
-      // setStatus('error')
-      return
-    }
-    const json = await response.json()
-
-    toast.success('Updated.')
-    setRefreshKey((currentRefreshKey) => currentRefreshKey + 1)
-  }
+  // the way I made UnCoSelect, it requires list = [{value: str, label: str},]
+  // so the keys of locations: [{id, location}] need to corrected
+  const mapLocations = locations.map((location) => {
+    return { value: location.id, label: location.locationName }
+  })
 
   return (
     <Form onSubmit={handleSubmit} style={{ height: '100%', margin: '0' }}>
@@ -68,7 +59,7 @@ export default function OrderAdjust({ order, setRefreshKey, locations }) {
 
       <UnCoSelect
         name={'location_id'}
-        list={locations}
+        list={mapLocations}
         startOption={order.location_id}
         labelOption="Select Location: "
         fallbackOption="labelOption"

@@ -7,8 +7,13 @@ import { DataURL } from '../constants'
 import Form from '../AAA/Form'
 import Button from '../AAA/Button'
 
-export default function NewLocation({ setRefreshKey, setShowNewLocation }) {
+import { usePostLocation } from '../../mutations/usePostLocation'
+
+export default function NewLocation({ setShowNewLocation }) {
   const { JWT } = React.useContext(TokenContext)
+  console.log('JWT: ', JWT)
+
+  const { mutate } = usePostLocation(setShowNewLocation, JWT)
 
   function handleSubmit(e) {
     e.preventDefault()
@@ -16,8 +21,26 @@ export default function NewLocation({ setRefreshKey, setShowNewLocation }) {
     const newLocation = String(formData.get('newLocation'))
     if (!newLocation) return
 
-    addNewLocation(newLocation)
+    mutate({
+      newLocation,
+    })
   }
+
+  /*
+  React.useEffect(() => {
+    articleInput.current.focus()
+  }, [])
+  */
+
+  return (
+    <Form onSubmit={handleSubmit}>
+      <UnCoInput label="New Location" name="newLocation" />
+      <Button>Submit</Button>
+    </Form>
+  )
+}
+
+/*
 
   async function addNewLocation(newLocation) {
     // setStatus('loading')
@@ -36,10 +59,5 @@ export default function NewLocation({ setRefreshKey, setShowNewLocation }) {
     setShowNewLocation(false)
     setRefreshKey((currentRefreshKey) => currentRefreshKey + 1)
   }
-  return (
-    <Form onSubmit={handleSubmit}>
-      <UnCoInput label="New Location" name="newLocation" />
-      <Button>Submit</Button>
-    </Form>
-  )
-}
+
+  */
